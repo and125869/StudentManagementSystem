@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sms.dao.GradeDAO">
+
+    <resultMap id="gradeMap" type="com.sms.entity.Grade">
+        <id property="gradeId" column="grade_id"/>
+        <result property="studentId" column="student_id"/>
+        <result property="courseId" column="course_id"/>
+        <result property="teacherId" column="teacher_id"/>
+        <result property="score" column="score"/>
+        <result property="gradeLevel" column="grade_level"/>
+        <result property="gpa" column="gpa"/>
+        <result property="entryTime" column="entry_time"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.sms.entity.Grade">
+        INSERT INTO t_grade (grade_id, student_id, course_id, teacher_id,
+            score, grade_level, gpa, entry_time, status)
+        VALUES (#{gradeId}, #{studentId}, #{courseId}, #{teacherId},
+            #{score}, #{gradeLevel}, #{gpa}, #{entryTime}, #{status})
+    </insert>
+
+    <insert id="batchInsert">
+        INSERT INTO t_grade (grade_id, student_id, course_id, teacher_id,
+            score, grade_level, gpa, entry_time, status) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.gradeId}, #{item.studentId}, #{item.courseId}, #{item.teacherId},
+            #{item.score}, #{item.gradeLevel}, #{item.gpa}, #{item.entryTime}, #{item.status})
+        </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.sms.entity.Grade">
+        UPDATE t_grade SET score=#{score}, grade_level=#{gradeLevel},
+            gpa=#{gpa}, status=#{status}
+        WHERE grade_id=#{gradeId}
+    </update>
+
+    <select id="findById" resultMap="gradeMap">
+        SELECT * FROM t_grade WHERE grade_id=#{gradeId}
+    </select>
+
+    <select id="findByStudent" resultMap="gradeMap">
+        SELECT * FROM t_grade WHERE student_id=#{studentId}
+        ORDER BY entry_time DESC
+    </select>
+
+    <select id="findByCourse" resultMap="gradeMap">
+        SELECT * FROM t_grade WHERE course_id=#{courseId}
+        ORDER BY student_id
+    </select>
+
+    <select id="findByTeacher" resultMap="gradeMap">
+        SELECT * FROM t_grade WHERE teacher_id=#{teacherId}
+        ORDER BY course_id, student_id
+    </select>
+
+    <update id="updateStatus">
+        UPDATE t_grade SET status=#{status} WHERE grade_id=#{gradeId}
+    </update>
+
+    <update id="batchUpdateStatus">
+        UPDATE t_grade SET status=#{status}
+        WHERE grade_id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="calculateAvgScore" resultType="double">
+        SELECT AVG(score) FROM t_grade
+        WHERE course_id=#{courseId} AND score IS NOT NULL
+    </select>
+</mapper>

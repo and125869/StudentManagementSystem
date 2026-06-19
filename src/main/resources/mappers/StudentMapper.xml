@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sms.dao.StudentDAO">
+
+    <resultMap id="studentMap" type="com.sms.entity.Student">
+        <id property="studentId" column="student_id"/>
+        <result property="name" column="name"/>
+        <result property="gender" column="gender"/>
+        <result property="birthDate" column="birth_date"/>
+        <result property="deptCode" column="dept_code"/>
+        <result property="classId" column="class_id"/>
+        <result property="major" column="major"/>
+        <result property="enrollmentYear" column="enrollment_year"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.sms.entity.Student">
+        INSERT INTO t_student (student_id, name, gender, birth_date, dept_code,
+            class_id, major, enrollment_year, phone, email, status)
+        VALUES (#{studentId}, #{name}, #{gender}, #{birthDate}, #{deptCode},
+            #{classId}, #{major}, #{enrollmentYear}, #{phone}, #{email}, #{status})
+    </insert>
+
+    <update id="update" parameterType="com.sms.entity.Student">
+        UPDATE t_student SET name=#{name}, gender=#{gender}, phone=#{phone},
+            email=#{email}, status=#{status}
+        WHERE student_id=#{studentId}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM t_student WHERE student_id=#{studentId}
+    </delete>
+
+    <select id="findById" resultMap="studentMap">
+        SELECT * FROM t_student WHERE student_id=#{studentId}
+    </select>
+
+    <select id="findByClass" resultMap="studentMap">
+        SELECT * FROM t_student WHERE class_id=#{classId}
+    </select>
+
+    <select id="findByDept" resultMap="studentMap">
+        SELECT * FROM t_student WHERE dept_code=#{deptCode}
+    </select>
+
+    <select id="findAll" resultMap="studentMap">
+        SELECT * FROM t_student ORDER BY student_id
+    </select>
+
+    <select id="findByName" resultMap="studentMap">
+        SELECT * FROM t_student WHERE name LIKE CONCAT('%',#{name},'%')
+    </select>
+
+    <update id="updateStatus">
+        UPDATE t_student SET status=#{status} WHERE student_id=#{studentId}
+    </update>
+</mapper>

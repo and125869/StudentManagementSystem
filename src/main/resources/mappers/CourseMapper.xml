@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sms.dao.CourseDAO">
+
+    <resultMap id="courseMap" type="com.sms.entity.Course">
+        <id property="courseId" column="course_id"/>
+        <result property="courseName" column="course_name"/>
+        <result property="credit" column="credit"/>
+        <result property="hours" column="hours"/>
+        <result property="deptCode" column="dept_code"/>
+        <result property="teacherId" column="teacher_id"/>
+        <result property="capacity" column="capacity"/>
+        <result property="enrolledCount" column="enrolled_count"/>
+        <result property="scheduleTime" column="schedule_time"/>
+        <result property="location" column="location"/>
+        <result property="prerequisite" column="prerequisite"/>
+        <result property="semester" column="semester"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.sms.entity.Course">
+        INSERT INTO t_course (course_id, course_name, credit, hours, dept_code,
+            teacher_id, capacity, enrolled_count, schedule_time, location,
+            prerequisite, semester, status)
+        VALUES (#{courseId}, #{courseName}, #{credit}, #{hours}, #{deptCode},
+            #{teacherId}, #{capacity}, #{enrolledCount}, #{scheduleTime},
+            #{location}, #{prerequisite}, #{semester}, #{status})
+    </insert>
+
+    <update id="update" parameterType="com.sms.entity.Course">
+        UPDATE t_course SET course_name=#{courseName}, credit=#{credit},
+            hours=#{hours}, teacher_id=#{teacherId}, capacity=#{capacity},
+            schedule_time=#{scheduleTime}, location=#{location},
+            prerequisite=#{prerequisite}, status=#{status}
+        WHERE course_id=#{courseId}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM t_course WHERE course_id=#{courseId}
+    </delete>
+
+    <select id="findById" resultMap="courseMap">
+        SELECT * FROM t_course WHERE course_id=#{courseId}
+    </select>
+
+    <select id="findAll" resultMap="courseMap">
+        SELECT * FROM t_course ORDER BY course_id
+    </select>
+
+    <select id="findByTeacher" resultMap="courseMap">
+        SELECT * FROM t_course WHERE teacher_id=#{teacherId}
+    </select>
+
+    <select id="findBySemester" resultMap="courseMap">
+        SELECT * FROM t_course WHERE semester=#{semester} ORDER BY course_id
+    </select>
+
+    <select id="findOpenCourses" resultMap="courseMap">
+        SELECT * FROM t_course WHERE status='开放' AND enrolled_count &lt; capacity
+        ORDER BY course_id
+    </select>
+
+    <select id="findByDept" resultMap="courseMap">
+        SELECT * FROM t_course WHERE dept_code=#{deptCode}
+    </select>
+
+    <update id="incrementEnrolled">
+        UPDATE t_course SET enrolled_count = enrolled_count + 1
+        WHERE course_id=#{courseId} AND enrolled_count &lt; capacity
+    </update>
+
+    <update id="decrementEnrolled">
+        UPDATE t_course SET enrolled_count = enrolled_count - 1
+        WHERE course_id=#{courseId} AND enrolled_count > 0
+    </update>
+</mapper>
